@@ -216,6 +216,14 @@ HRESULT CompressFiles(
   else
     params.AddAscii(" -sae");
 
+  if (arcType.IsEqualTo_Ascii_NoCase("tar")) {
+    // store symbolic links as links
+    params.AddAscii(" -snl");
+
+    // store hard links as links
+    // params.AddAscii(" -snh");
+  }
+
   params.AddAscii(kStopSwitchParsing);
   params.Add_Space();
   
