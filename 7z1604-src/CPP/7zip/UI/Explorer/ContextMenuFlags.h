@@ -20,6 +20,12 @@ namespace NContextMenuFlags
   const UInt32 kCompressToZip = 1 << 12;
   const UInt32 kCompressToZipEmail = 1 << 13;
 
+  const UInt32 kCompressToTar = 1 << 14;
+  const UInt32 kCompressToWim = 1 << 15;
+
+  const UInt32 kCompressToBzip = 1 << 16;
+  const UInt32 kCompressToGzip = 1 << 17;
+
   const UInt32 kCRC = (UInt32)1 << 31;
 }
 

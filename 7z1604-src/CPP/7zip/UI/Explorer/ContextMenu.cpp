@@ -220,6 +220,30 @@ static const CContextMenuCommand g_Commands[] =
     CZipContextMenu::kCompressToZipEmail,
     L"CompressToZipEmail",
     IDS_CONTEXT_COMPRESS_TO_EMAIL
+  },
+  {
+    NContextMenuFlags::kCompressToTar,
+    CZipContextMenu::kCompressToTar,
+    L"CompressToTar",
+    IDS_CONTEXT_COMPRESS_TO
+  },
+  {
+    NContextMenuFlags::kCompressToWim,
+    CZipContextMenu::kCompressToWim,
+    L"CompressToWim",
+    IDS_CONTEXT_COMPRESS_TO
+  },
+  {
+    NContextMenuFlags::kCompressToBzip,
+    CZipContextMenu::kCompressToBzip,
+    L"CompressToBzip",
+    IDS_CONTEXT_COMPRESS_TO
+  },
+  {
+    NContextMenuFlags::kCompressToGzip,
+    CZipContextMenu::kCompressToGzip,
+    L"CompressToGzip",
+    IDS_CONTEXT_COMPRESS_TO
   }
 };
 
@@ -363,6 +387,16 @@ static const char *kExtractExludeExtensions =
   " vb vcproj vbs"
   " wav wma wv"
   " xml xsd xsl xslt"
+  " ";
+
+static const char *kNotAllowedShowTarMenuExtensions =
+  " tar bz2 gz"
+  " ";
+
+static const char *kAllowedShowGzipMenuExtensions =
+  " tar"
+  " htm html css js json svg"
+  " sql"
   " ";
 
 /*
@@ -655,6 +689,8 @@ STDMETHODIMP CZipContextMenu::QueryContextMenu(HMENU hMenu, UINT indexMenu,
     
     UString arcName7z = arcName + L".7z";
     UString arcNameZip = arcName + L".zip";
+    UString arcNameTar = arcName + L".tar";
+    UString arcNameWim = arcName + L".wim";
 
     // Compress
     if ((contextMenuFlags & NContextMenuFlags::kCompress) != 0)
@@ -747,6 +783,89 @@ STDMETHODIMP CZipContextMenu::QueryContextMenu(HMENU hMenu, UINT indexMenu,
       _commandMap.Add(commandMapItem);
     }
     #endif
+
+    // CompressToTar
+    if (contextMenuFlags & NContextMenuFlags::kCompressToTar &&
+        !arcNameTar.IsEqualTo_NoCase(fs2us(fi0.Name)))
+    {
+      if (_fileNames.Size() > 1 || fi0.IsDir() ||
+        !FindExt(kNotAllowedShowTarMenuExtensions, fs2us(fi0.Name)))
+      {
+        CCommandMapItem commandMapItem;
+        UString s;
+        FillCommand(kCompressToTar, s, commandMapItem);
+        if (_dropMode)
+          commandMapItem.Folder = _dropPath;
+        else
+          commandMapItem.Folder = fs2us(folderPrefix);
+        commandMapItem.ArcName = arcNameTar;
+        commandMapItem.ArcType.SetFromAscii("tar");
+        MyFormatNew_ReducedName(s, arcNameTar);
+        MyInsertMenu(popupMenu, subIndex++, currentCommandID++, s, bitmap);
+        _commandMap.Add(commandMapItem);
+      }
+    }
+
+    // CompressToBzip or CompressToGzip
+    if (_fileNames.Size() == 1 && !fi0.IsDir()) {
+        arcName = CreateArchiveName(fi0, true);
+        UString arcNameBzip = arcName + L".bz2";
+        UString arcNameGzip = arcName + L".gz";
+
+        if (contextMenuFlags & NContextMenuFlags::kCompressToBzip &&
+            FindExt(kAllowedShowGzipMenuExtensions, fs2us(fi0.Name)) &&
+            !arcNameBzip.IsEqualTo_NoCase(fs2us(fi0.Name)))
+        {
+          CCommandMapItem commandMapItem;
+          UString s;
+          FillCommand(kCompressToBzip, s, commandMapItem);
+          if (_dropMode)
+            commandMapItem.Folder = _dropPath;
+          else
+            commandMapItem.Folder = fs2us(folderPrefix);
+          commandMapItem.ArcName = arcNameBzip;
+          commandMapItem.ArcType.SetFromAscii("bzip2");
+          MyFormatNew_ReducedName(s, arcNameBzip);
+          MyInsertMenu(popupMenu, subIndex++, currentCommandID++, s, bitmap);
+          _commandMap.Add(commandMapItem);
+        }
+
+        if (contextMenuFlags & NContextMenuFlags::kCompressToGzip &&
+			FindExt(kAllowedShowGzipMenuExtensions, fs2us(fi0.Name)) &&
+            !arcNameGzip.IsEqualTo_NoCase(fs2us(fi0.Name)))
+        {
+          CCommandMapItem commandMapItem;
+          UString s;
+          FillCommand(kCompressToGzip, s, commandMapItem);
+          if (_dropMode)
+            commandMapItem.Folder = _dropPath;
+          else
+            commandMapItem.Folder = fs2us(folderPrefix);
+          commandMapItem.ArcName = arcNameGzip;
+          commandMapItem.ArcType.SetFromAscii("gzip");
+          MyFormatNew_ReducedName(s, arcNameGzip);
+          MyInsertMenu(popupMenu, subIndex++, currentCommandID++, s, bitmap);
+          _commandMap.Add(commandMapItem);
+        }
+    }
+
+    // CompressToWim
+    if (contextMenuFlags & NContextMenuFlags::kCompressToWim &&
+        !arcNameWim.IsEqualTo_NoCase(fs2us(fi0.Name)))
+    {
+      CCommandMapItem commandMapItem;
+      UString s;
+      FillCommand(kCompressToWim, s, commandMapItem);
+      if (_dropMode)
+        commandMapItem.Folder = _dropPath;
+      else
+        commandMapItem.Folder = fs2us(folderPrefix);
+      commandMapItem.ArcName = arcNameWim;
+      commandMapItem.ArcType.SetFromAscii("wim");
+      MyFormatNew_ReducedName(s, arcNameWim);
+      MyInsertMenu(popupMenu, subIndex++, currentCommandID++, s, bitmap);
+      _commandMap.Add(commandMapItem);
+    }
   }
 
 
@@ -908,6 +1027,10 @@ STDMETHODIMP CZipContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO commandInfo)
       case kCompressTo7zEmail:
       case kCompressToZip:
       case kCompressToZipEmail:
+      case kCompressToTar:
+      case kCompressToWim:
+      case kCompressToBzip:
+      case kCompressToGzip:
       {
         bool email =
             (cmdID == kCompressEmail) ||
