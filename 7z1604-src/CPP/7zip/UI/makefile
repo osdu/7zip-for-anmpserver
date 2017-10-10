@@ -6,6 +6,12 @@ DIRS = \
   FileManager\~ \
   GUI\~ \
 
+DIRS = \
+  Console\~ \
+  Explorer\~ \
+  FileManager\~ \
+  GUI\~ \
+
 all: $(DIRS)
 
 $(DIRS):

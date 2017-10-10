@@ -11,6 +11,13 @@ DIRS = \
   SFXCon\~ \
   SFXSetup\~ \
   SFXWin\~ \
+
+DIRS = \
+  Alone\~ \
+  Format7zF\~ \
+  LzmaCon\~ \
+  SFXCon\~ \
+  SFXWin\~ \
   
 all: $(DIRS)
 
