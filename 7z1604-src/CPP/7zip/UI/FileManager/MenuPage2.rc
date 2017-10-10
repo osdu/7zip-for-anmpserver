@@ -13,5 +13,5 @@ BEGIN
   LTEXT    "Context menu items:", IDT_SYSTEM_CONTEXT_MENU_ITEMS, m, m + 70, xc, 8
   CONTROL  "List", IDL_SYSTEM_OPTIONS, "SysListView32",
            LVS_REPORT | LVS_SINGLESEL | LVS_NOCOLUMNHEADER | WS_BORDER | WS_TABSTOP,
-           m, m + y, xc, yc - y
+           m, m + y, xc, yc - y + 28
 END

@@ -56,6 +56,10 @@ static const CContextMenuItem kMenuItems[] =
   { IDS_CONTEXT_COMPRESS, kCompress },
   { IDS_CONTEXT_COMPRESS_TO, kCompressTo7z },
   { IDS_CONTEXT_COMPRESS_TO, kCompressToZip },
+  { IDS_CONTEXT_COMPRESS_TO, kCompressToTar },
+  { IDS_CONTEXT_COMPRESS_TO, kCompressToWim },
+  { IDS_CONTEXT_COMPRESS_TO, kCompressToBzip },
+  { IDS_CONTEXT_COMPRESS_TO, kCompressToGzip },
 
   #ifndef UNDER_CE
   { IDS_CONTEXT_COMPRESS_EMAIL, kCompressEmail },
@@ -205,6 +209,18 @@ bool CMenuPage::OnInit()
           case kCompressToZip:
           case kCompressToZipEmail:
             s2.AddAscii(".zip");
+            break;
+          case kCompressToTar:
+            s2.AddAscii(".tar");
+            break;
+          case kCompressToWim:
+            s2.AddAscii(".wim");
+            break;
+          case kCompressToBzip:
+            s2.AddAscii(".bz2");
+            break;
+          case kCompressToGzip:
+            s2.AddAscii(".gz");
             break;
         }
         s = MyFormatNew(s, s2);
